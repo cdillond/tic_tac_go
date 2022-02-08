@@ -18,39 +18,36 @@ type Space struct {
 // the space with that id has not already been chosen
 func compChoice(chosen map[int]bool) int {
 	id := rand.Intn(9)
-
 	if chosen[id] {
 		id = compChoice(chosen)
-
 		return id
 	}
-
 	return id
 }
 
 func makeChoice(chosen map[int]bool) int {
-
 	var input string
 	fmt.Scanln(&input)
 	id, err := strconv.Atoi(input)
 	if err != nil {
-		panic(err)
-	}
-
-	if chosen[id] {
-		fmt.Println("MUST CHOOSE EMPTY SPACE")
+		fmt.Println("INPUT MUST BE A DIGIT")
 		id = makeChoice(chosen)
-
+	}
+	if (id < 0) || (8 < id) {
+		fmt.Println("INPUT MUST BE AN INTEGER IN [0,8]")
+		id = makeChoice(chosen)
+	}
+	if chosen[id] {
+		fmt.Println("MUST CHOOSE AN EMPTY SPACE")
+		id = makeChoice(chosen)
 		return id
 	}
-
 	return id
 }
 
 func printBoard(board [9]Space) {
 	fmt.Printf("\n")
 	for i, val := range board {
-
 		fmt.Printf(val.sym)
 		if (i+1)%3 != 0 {
 			fmt.Printf("|")
@@ -58,7 +55,6 @@ func printBoard(board [9]Space) {
 		if i == 2 || i == 5 {
 			fmt.Printf("\n-----\n")
 		}
-
 	}
 	fmt.Printf("\n\n********\n")
 }
@@ -69,34 +65,26 @@ func chooseMode() string {
 	if mode != "M" && mode != "S" {
 		fmt.Println("MUST ENTER 'M' OR 'S'")
 		mode = chooseMode()
-
 		return mode
 	}
-
 	return mode
 }
 
 func main() {
-
 	fmt.Println("CHOOSE MODE\nFOR SINGLE PLAYER ENTER 'S'\nFOR MULTIPLAYER ENTER 'M'")
 	mode := chooseMode()
-
 	board := [9]Space{}
 	chosen := make(map[int]bool)
-
 	for i := 0; i < 9; i++ {
 		id := i
 		sym := strconv.Itoa(i)
 		board[i] = Space{id, sym}
 		chosen[i] = false
 	}
-
 	printBoard(board)
 	rand.Seed(time.Now().Unix())
-
 	for i := 0; i < 9; i++ {
 		var id int
-
 		if i%2 == 0 {
 			id = makeChoice(chosen)
 		} else if mode == "S" {
@@ -105,7 +93,6 @@ func main() {
 			id = makeChoice(chosen)
 		}
 		finished := false
-
 		chosen[id] = true
 		for m, val := range board {
 			if val.id == id {
@@ -116,9 +103,7 @@ func main() {
 				}
 			}
 		}
-
 		printBoard(board)
-
 		for i := 0; i < 3; i++ {
 			if board[i*3].sym == board[i*3+1].sym && board[i*3].sym == board[i*3+2].sym {
 				fmt.Println("GAME OVER")
@@ -134,9 +119,7 @@ func main() {
 				finished = true
 				break
 			}
-
 		}
-
 		if board[0].sym == board[4].sym && board[0].sym == board[8].sym {
 			fmt.Println("GAME OVER")
 			fmt.Printf(board[0].sym)
@@ -151,11 +134,9 @@ func main() {
 			finished = true
 			break
 		}
-
 		if finished == true {
 			break
 		}
-
 		if i == 8 && !finished {
 			fmt.Println("GAME OVER: TIE")
 		}
